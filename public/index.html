@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ughhhh.com - Anonymous Comments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Creepster&family=Fredoka+One&family=Lobster&family=Orbitron:wght@400;700;900&family=Press+Start+2P&family=Righteous&family=Rubik+Bubbles&family=Shrikhand&family=Monoton&display=swap" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #a8e6cf);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 5px #ff6b6b, 0 0 10px #ff6b6b, 0 0 15px #ff6b6b, 0 0 20px #ff6b6b;
+        }
+        
+        .glitch-text {
+            animation: glitch 2s linear infinite;
+        }
+        
+        @keyframes glitch {
+            2%, 64% {
+                transform: translate(2px,0) skew(0deg);
+            }
+            4%, 60% {
+                transform: translate(-2px,0) skew(0deg);
+            }
+            62% {
+                transform: translate(0,0) skew(5deg);
+            }
+        }
+        
+        .bubble-hover:hover {
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+        
+        .rainbow-border {
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3) 1;
+            animation: borderRotate 3s linear infinite;
+        }
+        
+        @keyframes borderRotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <header class="text-center mb-12">
+            <h1 class="text-8xl font-bold text-white mb-4 neon-text glitch-text" style="font-family: 'Bungee Shade', cursive;">UGHHHH</h1>
+            <h2 class="text-3xl text-yellow-300 mb-2" style="font-family: 'Monoton', cursive;">.COM</h2>
+            <p class="text-2xl text-pink-200" style="font-family: 'Creepster', cursive;">🪐 Spill Your Cosmic Chaos Anonymously 👽</p>
+        </header>
+
+        <div class="bg-black bg-opacity-80 rounded-3xl shadow-2xl p-8 mb-12 rainbow-border bubble-hover">
+            <form id="commentForm" class="space-y-6">
+                <div>
+                    <textarea 
+                        id="commentText" 
+                        placeholder="TRANSMIT YOUR COSMIC THOUGHTS... 🪐🛸✨"
+                        class="w-full p-4 bg-purple-900 text-yellow-300 border-4 border-pink-500 rounded-xl resize-none focus:outline-none focus:ring-4 focus:ring-cyan-400 focus:border-transparent text-lg placeholder-pink-300"
+                        style="font-family: 'Press Start 2P', monospace;"
+                        rows="5"
+                        maxlength="500"
+                    ></textarea>
+                    <div class="text-lg text-cyan-400 mt-3 text-right" style="font-family: 'Orbitron', monospace;">
+                        <span id="charCount">0</span>/500 CHARS
+                    </div>
+                </div>
+                <button 
+                    type="submit" 
+                    class="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-black py-4 px-6 rounded-full hover:from-yellow-500 hover:via-pink-500 hover:to-red-500 transition duration-500 font-black text-xl bubble-hover transform hover:rotate-1"
+                    style="font-family: 'Fredoka One', cursive;"
+                >
+                    🛸 BEAM IT TO THE COSMOS 🪐
+                </button>
+            </form>
+        </div>
+
+        <div class="space-y-6">
+            <h2 class="text-5xl font-bold text-center text-white mb-8 neon-text" style="font-family: 'Rubik Bubbles', cursive;">🌌 THE COSMIC FEED ✨</h2>
+            <div id="commentsContainer">
+                <div class="text-center text-yellow-300 py-12 bg-black bg-opacity-50 rounded-2xl">
+                    <p class="text-2xl" style="font-family: 'Shrikhand', cursive;">The cosmos awaits your transmission! 🛸</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
