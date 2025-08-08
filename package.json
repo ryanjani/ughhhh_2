@@ -8,9 +8,14 @@
     "dev": "node server.js"
   },
   "dependencies": {
+    "@vercel/kv": "^3.0.0",
     "express": "^4.18.2"
   },
-  "keywords": ["anonymous", "comments", "website"],
+  "keywords": [
+    "anonymous",
+    "comments",
+    "website"
+  ],
   "author": "",
   "license": "MIT"
 }
