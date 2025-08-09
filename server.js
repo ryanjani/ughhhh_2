@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { put, head } = require('@vercel/blob');
+const { put, list } = require('@vercel/blob');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,18 +39,32 @@ async function initializeComments() {
 // Get comments from Blob or fallback to local storage
 async function getComments() {
     try {
-        const response = await fetch(`${process.env.BLOB_READ_WRITE_TOKEN ? 'https://blob.vercel-storage.com' : 'fallback'}/${BLOB_FILENAME}`, {
-            headers: process.env.BLOB_READ_WRITE_TOKEN ? {
-                'authorization': `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
-            } : {}
+        // Check if we're in a Vercel environment
+        if (!process.env.BLOB_READ_WRITE_TOKEN) {
+            return DEFAULT_COMMENTS;
+        }
+
+        // List blobs to find our comments file
+        const { blobs } = await list({
+            prefix: BLOB_FILENAME
         });
+
+        if (blobs.length === 0) {
+            return DEFAULT_COMMENTS;
+        }
+
+        // Fetch the comments from the blob URL
+        const blob = blobs[0];
+        const response = await fetch(blob.url);
         
         if (response.ok) {
             const comments = await response.json();
             return comments || DEFAULT_COMMENTS;
         }
-        throw new Error('Blob not found');
+        
+        return DEFAULT_COMMENTS;
     } catch (error) {
+        console.log('Error reading from Blob storage:', error.message);
         // Fallback for local development or if blob doesn't exist
         return DEFAULT_COMMENTS;
     }
@@ -59,12 +73,19 @@ async function getComments() {
 // Save comments to Blob
 async function saveComments(comments) {
     try {
-        await put(BLOB_FILENAME, JSON.stringify(comments), {
+        if (!process.env.BLOB_READ_WRITE_TOKEN) {
+            console.log('Blob storage not available locally, changes will not persist');
+            return;
+        }
+
+        const blob = await put(BLOB_FILENAME, JSON.stringify(comments), {
             access: 'public',
             addRandomSuffix: false
         });
+        
+        console.log('Comments saved to Blob:', blob.url);
     } catch (error) {
-        console.log('Blob storage not available, changes will not persist');
+        console.error('Error saving to Blob storage:', error.message);
     }
 }
 
