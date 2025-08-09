@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { kv } = require('@vercel/kv');
+const { put, head } = require('@vercel/blob');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,35 +22,49 @@ const DEFAULT_COMMENTS = [
     }
 ];
 
-// Initialize comments in KV store if not exists
+const BLOB_FILENAME = 'comments.json';
+
+// Initialize comments in Blob store if not exists
 async function initializeComments() {
     try {
-        const existingComments = await kv.get('comments');
-        if (!existingComments) {
-            await kv.set('comments', DEFAULT_COMMENTS);
+        const existingComments = await getComments();
+        if (!existingComments || existingComments.length === 0) {
+            await saveComments(DEFAULT_COMMENTS);
         }
     } catch (error) {
-        console.log('Running locally - KV not available, using in-memory storage');
+        console.log('Running locally - Blob not available, using in-memory storage');
     }
 }
 
-// Get comments from KV or fallback to local storage
+// Get comments from Blob or fallback to local storage
 async function getComments() {
     try {
-        const comments = await kv.get('comments');
-        return comments || DEFAULT_COMMENTS;
+        const response = await fetch(`${process.env.BLOB_READ_WRITE_TOKEN ? 'https://blob.vercel-storage.com' : 'fallback'}/${BLOB_FILENAME}`, {
+            headers: process.env.BLOB_READ_WRITE_TOKEN ? {
+                'authorization': `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
+            } : {}
+        });
+        
+        if (response.ok) {
+            const comments = await response.json();
+            return comments || DEFAULT_COMMENTS;
+        }
+        throw new Error('Blob not found');
     } catch (error) {
-        // Fallback for local development
+        // Fallback for local development or if blob doesn't exist
         return DEFAULT_COMMENTS;
     }
 }
 
-// Save comments to KV
+// Save comments to Blob
 async function saveComments(comments) {
     try {
-        await kv.set('comments', comments);
+        await put(BLOB_FILENAME, JSON.stringify(comments), {
+            access: 'public',
+            addRandomSuffix: false
+        });
     } catch (error) {
-        console.log('KV storage not available, changes will not persist');
+        console.log('Blob storage not available, changes will not persist');
     }
 }
 
